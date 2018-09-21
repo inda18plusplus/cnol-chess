@@ -110,6 +110,8 @@ public class Board {
 
         move.perform(piecePosition, newPosition, this::getPiece, this::setPiece);
 
+        this.nextColor();
+
         if (sourcePiece.canPromote()) {
           int promoteRow = sourcePiece.getColor() == Piece.Color.BLACK ? 7 : 0;
 
@@ -119,8 +121,6 @@ public class Board {
             return MoveResult.PROMOTION_REQUIRED;
           }
         }
-
-        this.nextColor();
 
         return MoveResult.OK;
       }
