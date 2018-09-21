@@ -40,7 +40,7 @@ public class Pawn extends Piece {
 
     int deltaRow = super.color == Color.BLACK ? 1 : -1;
 
-    moves.add(new LinearMove(0, deltaRow, this.hasMoved ? 1 : 3, Move.CaptureRule.NO_CAPTURE));
+    moves.add(new LinearMove(0, deltaRow, this.hasMoved ? 1 : 2, Move.CaptureRule.NO_CAPTURE));
     moves.add(new RelativeMove(-1, deltaRow, Move.CaptureRule.MUST_CAPTURE));
     moves.add(new RelativeMove(1, deltaRow, Move.CaptureRule.MUST_CAPTURE));
 
