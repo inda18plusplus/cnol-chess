@@ -18,11 +18,11 @@ class TimeController {
   /**
    * Creates a time controller that will keep track of much time each player got left to play with.
    *
-   * @param totalTime The total amount of time each player begins with, in minutes.
+   * @param totalTime The total amount of time each player begins with, in seconds.
    * @param timeIncreasePerMove The time given to the player when a move is made, in seconds.
    */
   TimeController(double totalTime, double timeIncreasePerMove) {
-    this.totalTime = (long) (totalTime * 60000);
+    this.totalTime = (long) (totalTime * 1000);
     this.timeIncreasePerMove = (long) (timeIncreasePerMove * 1000);
     active = true;
   }
@@ -40,6 +40,11 @@ class TimeController {
   TimeController() {
   }
 
+  /**
+   * Starts the timers with a delay.
+   *
+   * @param delay The delay in seconds.
+   */
   void beginIn(long delay) {
     if (hasBegun() || !active) {
       return;
@@ -64,7 +69,7 @@ class TimeController {
       public void run() {
         whiteTimeTracker = blackTimeTracker = opponentTimeTracker = System.currentTimeMillis();
       }
-    }, delay);
+    }, delay * 1000);
   }
 
   void moveMade(Color color) {

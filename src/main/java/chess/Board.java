@@ -45,7 +45,7 @@ public class Board {
   public Board(GameMode gameMode) {
     this();
 
-    this.applyLayout(gameMode);
+    this.useGameMode(gameMode);
   }
 
   /**
@@ -219,7 +219,7 @@ public class Board {
    */
   public CheckType getCheck(Piece.Color color) {
     if (timedChessController.hasLost(color)) {
-      return CheckType.CHECKMATE;
+      return CheckType.OUT_OF_TIME;
     }
 
     Map<Position, Set<Position>> possibleMoves = this.getAllPossibleMoves(color);
@@ -316,7 +316,7 @@ public class Board {
     return destinations;
   }
 
-  private void applyLayout(GameMode gameMode) {
+  private void useGameMode(GameMode gameMode) {
     Map<Character, Function<Piece.Color, Piece>> pieceMap = new HashMap<>();
     pieceMap.put('k', King::new);
     pieceMap.put('r', Rook::new);
@@ -326,8 +326,8 @@ public class Board {
     pieceMap.put('p', Pawn::new);
 
     if (gameMode == GameMode.TIMED_TWO_MIN_ONE_SEC) {
-      timedChessController = new TimeController(2, 1);
-      timedChessController.beginIn(10000);
+      timedChessController = new TimeController(120, 1);
+      timedChessController.beginIn(10);
     }
 
     switch (gameMode) {
@@ -588,7 +588,8 @@ public class Board {
     NONE,
     CHECK,
     CHECKMATE,
-    STALEMATE
+    STALEMATE,
+    OUT_OF_TIME
   }
 
   public enum MoveResult {
