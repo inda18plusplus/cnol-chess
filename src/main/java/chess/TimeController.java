@@ -16,7 +16,8 @@ class TimeController {
   private Timer startTimer;
 
   /**
-   * Creates a time controller that will keep track of much time each player got left to play with.
+   * Creates a time controller that will keep track of how
+   * much time each player got left to play with.
    *
    * @param totalTime The total amount of time each player begins with, in seconds.
    * @param timeIncreasePerMove The time given to the player when a move is made, in seconds.

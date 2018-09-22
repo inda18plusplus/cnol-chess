@@ -110,7 +110,8 @@ public class Board {
       Piece sourcePiece = this.getPiece(piecePosition);
 
       if (sourcePiece != null && sourcePiece.isOfColor(this.currentPlayingColor)) {
-        if (timedChessController.hasLost(sourcePiece.getColor())) {
+
+        if (timedChessController.hasLost(this.currentPlayingColor)) {
           return MoveResult.INVALID_MOVE;
         }
 
