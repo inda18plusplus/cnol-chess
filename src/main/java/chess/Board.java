@@ -56,6 +56,8 @@ public class Board {
   private Board(Board board) {
     this.pieces = new Piece[8][8];
 
+    timedChessController = new TimeController(board.timedChessController);
+
     for (Position position : board.promotingPieces) {
       this.promotingPieces.add(new Position(position));
     }
@@ -108,6 +110,10 @@ public class Board {
       Piece sourcePiece = this.getPiece(piecePosition);
 
       if (sourcePiece != null && sourcePiece.isOfColor(this.currentPlayingColor)) {
+        if (timedChessController.hasLost(sourcePiece.getColor())) {
+          return MoveResult.INVALID_MOVE;
+        }
+
         Move move = this.availableDestinations(piecePosition).get(newPosition);
 
         move.perform(piecePosition, newPosition, this::getPiece, this::setPiece);

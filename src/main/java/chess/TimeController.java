@@ -27,6 +27,16 @@ class TimeController {
     active = true;
   }
 
+  TimeController(TimeController controller) {
+    this.totalTime = controller.totalTime;
+    this.timeIncreasePerMove = controller.timeIncreasePerMove;
+    this.whiteTimeTracker = controller.whiteTimeTracker;
+    this.blackTimeTracker = controller.blackTimeTracker;
+    this.opponentTimeTracker = controller.opponentTimeTracker;
+    this.active = controller.active;
+    this.startTimer = controller.startTimer;
+  }
+
   TimeController() {
   }
 
