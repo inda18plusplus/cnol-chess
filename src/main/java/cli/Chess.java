@@ -1,6 +1,7 @@
 package cli;
 
 import chess.Board;
+import chess.Board.GameMode;
 import chess.piece.Bishop;
 import chess.piece.King;
 import chess.piece.Knight;
@@ -19,7 +20,7 @@ import java.util.Set;
  */
 class Chess {
 
-  private final Board board = new Board(Board.Layout.CLASSIC);
+  private final Board board = new Board(GameMode.CLASSIC);
 
   /**
    * Starts a game of chess.

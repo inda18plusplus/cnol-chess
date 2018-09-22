@@ -20,10 +20,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Board {
+
   private final Piece[][] pieces;
   private Piece.Color currentPlayingColor;
 
   private final List<Position> promotingPieces = new ArrayList<>();
+
+  private TimeController timedChessController = new TimeController();
 
   /**
    * Creates an empty board.
@@ -35,14 +38,14 @@ public class Board {
 
 
   /**
-   * Creates a board with a predefined layout.
+   * Creates a board with a predefined gameMode.
    *
-   * @param layout The layout to use
+   * @param gameMode The gameMode to use
    */
-  public Board(Layout layout) {
+  public Board(GameMode gameMode) {
     this();
 
-    this.applyLayout(layout);
+    this.useGameMode(gameMode);
   }
 
   /**
@@ -52,6 +55,8 @@ public class Board {
    */
   private Board(Board board) {
     this.pieces = new Piece[8][8];
+
+    timedChessController = new TimeController(board.timedChessController);
 
     for (Position position : board.promotingPieces) {
       this.promotingPieces.add(new Position(position));
@@ -74,7 +79,7 @@ public class Board {
   /**
    * Places an additional chess.piece on the board.
    *
-   * @param piece    The chess.piece
+   * @param piece The chess.piece
    * @param position Where to place
    * @return true if the placement was successful
    */
@@ -96,20 +101,26 @@ public class Board {
    * Moves a chess.piece on the board.
    *
    * @param piecePosition The position of the chess.piece to chess.piece.move.
-   * @param newPosition   The position to chess.piece.move the chess.piece to.
-   * @return OK if move was successful.
-   *         INVALID_MOVE if the move was illegal.
-   *         PROMOTION_REQUIRED if a chess.piece needs promotion after the move.
+   * @param newPosition The position to chess.piece.move the chess.piece to.
+   * @return OK if move was successful. INVALID_MOVE if the move was illegal. PROMOTION_REQUIRED if
+   *     a chess.piece needs promotion after the move.
    */
   public MoveResult tryMove(Position piecePosition, Position newPosition) {
     if (!this.needsPromotion() && isValidMove(piecePosition, newPosition)) {
       Piece sourcePiece = this.getPiece(piecePosition);
 
       if (sourcePiece != null && sourcePiece.isOfColor(this.currentPlayingColor)) {
+
+        if (timedChessController.hasLost(this.currentPlayingColor)) {
+          return MoveResult.INVALID_MOVE;
+        }
+
         Move move = this.availableDestinations(piecePosition).get(newPosition);
 
         move.perform(piecePosition, newPosition, this::getPiece, this::setPiece);
 
+        timedChessController.beginIn(0);
+        timedChessController.moveMade(currentPlayingColor);
         this.nextColor();
 
         if (sourcePiece.canPromote()) {
@@ -148,7 +159,6 @@ public class Board {
     Set<Position> availablePositions = this.availableDestinations(piecePosition).keySet();
 
     Piece piece = this.getPiece(piecePosition);
-
 
     if (piece != null) {
       Set<Position> positionsResultingInCheck = new HashSet<>();
@@ -209,6 +219,10 @@ public class Board {
    * @return The type of check
    */
   public CheckType getCheck(Piece.Color color) {
+    if (timedChessController.hasLost(color)) {
+      return CheckType.OUT_OF_TIME;
+    }
+
     Map<Position, Set<Position>> possibleMoves = this.getAllPossibleMoves(color);
 
     if (this.isColorInCheck(color)) {
@@ -241,6 +255,7 @@ public class Board {
       if (piece != null) {
         Piece newPiece = newPieceType.toPiece(piece.getColor());
         this.setPiece(newPiece, position);
+
         return true;
       }
     }
@@ -302,7 +317,7 @@ public class Board {
     return destinations;
   }
 
-  private void applyLayout(Layout layout) {
+  private void useGameMode(GameMode gameMode) {
     Map<Character, Function<Piece.Color, Piece>> pieceMap = new HashMap<>();
     pieceMap.put('k', King::new);
     pieceMap.put('r', Rook::new);
@@ -311,7 +326,13 @@ public class Board {
     pieceMap.put('q', Queen::new);
     pieceMap.put('p', Pawn::new);
 
-    switch (layout) {
+    if (gameMode == GameMode.TIMED_TWO_MIN_ONE_SEC) {
+      timedChessController = new TimeController(120, 1);
+      timedChessController.beginIn(10);
+    }
+
+    switch (gameMode) {
+      case TIMED_TWO_MIN_ONE_SEC:
       case CLASSIC:
         this.layoutFromText(
             pieceMap,
@@ -370,7 +391,6 @@ public class Board {
 
       case REALLY_BAD_CHESS:
         StringBuilder builder = new StringBuilder();
-
 
         Supplier<Character> randomPiece = () -> {
           double random = Math.random();
@@ -556,19 +576,21 @@ public class Board {
   }
 
 
-  public enum Layout {
+  public enum GameMode {
     CLASSIC,
     UPSIDE_DOWN,
     REALLY_BAD_CHESS,
     PEASANTS_REVOLT,
-    CHARGE_OF_THE_LIGHT_BRIGADE
+    CHARGE_OF_THE_LIGHT_BRIGADE,
+    TIMED_TWO_MIN_ONE_SEC
   }
 
   public enum CheckType {
     NONE,
     CHECK,
     CHECKMATE,
-    STALEMATE
+    STALEMATE,
+    OUT_OF_TIME
   }
 
   public enum MoveResult {
