@@ -19,8 +19,7 @@ class TimeController {
    * Creates a time controller that will keep track of much time each player got left to play with.
    *
    * @param totalTime The total amount of time each player begins with, in minutes.
-   * @param timeIncreasePerMove The amount of time each player is given when a move is made, in
-   * seconds.
+   * @param timeIncreasePerMove The time given to the player when a move is made, in seconds.
    */
   TimeController(double totalTime, double timeIncreasePerMove) {
     this.totalTime = (long) (totalTime * 60000);
@@ -41,7 +40,7 @@ class TimeController {
         startTimer.cancel();
       }
 
-      whiteTimeTracker = blackTimeTracker = System.currentTimeMillis();
+      whiteTimeTracker = blackTimeTracker = opponentTimeTracker = System.currentTimeMillis();
       return;
     }
 
@@ -53,7 +52,7 @@ class TimeController {
     startTimer.schedule(new TimerTask() {
       @Override
       public void run() {
-        whiteTimeTracker = blackTimeTracker = System.currentTimeMillis();
+        whiteTimeTracker = blackTimeTracker = opponentTimeTracker = System.currentTimeMillis();
       }
     }, delay);
   }

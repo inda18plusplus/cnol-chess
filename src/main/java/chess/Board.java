@@ -101,7 +101,7 @@ public class Board {
    * @param piecePosition The position of the chess.piece to chess.piece.move.
    * @param newPosition The position to chess.piece.move the chess.piece to.
    * @return OK if move was successful. INVALID_MOVE if the move was illegal. PROMOTION_REQUIRED if
-   * a chess.piece needs promotion after the move.
+   *     a chess.piece needs promotion after the move.
    */
   public MoveResult tryMove(Position piecePosition, Position newPosition) {
     if (!this.needsPromotion() && isValidMove(piecePosition, newPosition)) {
