@@ -1,6 +1,7 @@
 package chess;
 
 import chess.piece.Bishop;
+import chess.piece.Kangaroo;
 import chess.piece.King;
 import chess.piece.Knight;
 import chess.piece.Pawn;
@@ -325,6 +326,7 @@ public class Board {
     pieceMap.put('n', Knight::new);
     pieceMap.put('q', Queen::new);
     pieceMap.put('p', Pawn::new);
+    pieceMap.put('j', Kangaroo::new);
 
     if (gameMode == GameMode.TIMED_TWO_MIN_ONE_SEC) {
       timedChessController = new TimeController(120, 1);
@@ -430,6 +432,20 @@ public class Board {
         builder.setCharAt(4 + 7 * 9, 'K');
 
         this.layoutFromText(pieceMap, builder.toString());
+        break;
+
+      case KANGAROO_LAYOUT:
+        this.layoutFromText(
+            pieceMap,
+            "rnbqkbnr\n"
+                + "jjjjjjjj\n"
+                + "        \n"
+                + "        \n"
+                + "        \n"
+                + "        \n"
+                + "JJJJJJJJ\n"
+                + "RNBQKBNR\n"
+        );
         break;
 
       default:
@@ -582,7 +598,8 @@ public class Board {
     REALLY_BAD_CHESS,
     PEASANTS_REVOLT,
     CHARGE_OF_THE_LIGHT_BRIGADE,
-    TIMED_TWO_MIN_ONE_SEC
+    TIMED_TWO_MIN_ONE_SEC,
+    KANGAROO_LAYOUT
   }
 
   public enum CheckType {
